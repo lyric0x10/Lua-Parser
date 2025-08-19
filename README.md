@@ -5,13 +5,15 @@
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)]()  
 
 A **Lua parser and lexer** written in modern C++.  
-It takes a Lua source file, breaks it into tokens, builds an **AST (Abstract Syntax Tree)**, and prints everything as **JSON**.
+It takes a Lua source file, breaks it into tokens, builds an **AST (Abstract Syntax Tree)**, and prints everything as **JSON**.  
+It also has a built-in **benchmark mode** to test lexer + parser performance.
 
 ---
 
 ## 📖 Table of Contents
 - [Features](#-features)
 - [How to Run](#-how-to-run)
+- [Benchmark Mode](#-benchmark-mode)
 - [Examples](#-examples)
 - [About the Code](#-about-the-code)
 - [Limitations](#-limitations)
@@ -27,6 +29,7 @@ It takes a Lua source file, breaks it into tokens, builds an **AST (Abstract Syn
 - **AST with named slots** → nodes have meaningful keys like `"variables"`, `"values"`, `"body"`
 - **JSON output** → easy to visualize or consume in other tools
 - **File input** → drag + drop a file onto the exe, or run it from terminal
+- **Benchmark mode** → stress-test lexer + parser on repeated input
 
 ---
 
@@ -37,13 +40,33 @@ It takes a Lua source file, breaks it into tokens, builds an **AST (Abstract Syn
 g++ -std=c++17 -O2 -o lua_parser "Lua Parser.cpp"
 ````
 
-### Run
+### Run (normal mode)
 
 ```bash
 ./lua_parser script.lua
 ```
 
 It will print the AST in JSON to your terminal.
+
+---
+
+## ⚡ Benchmark Mode
+
+You can run the parser in **benchmark mode** to measure performance:
+
+```bash
+./lua_parser
+Enter path to source file: benchmark
+[Benchmark] Enter path to source file: myscript.lua
+[Benchmark] How many times to repeat the code? (default = 50):
+[Benchmark] How many runs to perform? (default = 20000):
+```
+
+* The file is read and **repeated N times** (default 50) to simulate a larger program.
+* The parser then runs **M iterations** (default 20,000) of `Lexer + Parse`.
+* The total time and **average lex+parse time** per iteration are reported.
+
+This is useful for comparing performance against other Lua parsers.
 
 ---
 
@@ -148,7 +171,7 @@ The **core design and logic are mine**, and I reviewed/refined everything to ens
 * Expand Lua grammar coverage
 * Better error reporting
 * Options for JSON formatting (pretty/compact)
-* Benchmarking with larger Lua projects
+* More benchmarking against other Lua parsers
 
 ---
 
