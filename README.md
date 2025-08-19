@@ -166,7 +166,7 @@ Contributions are welcome!
 
 This project is licensed under the [MIT License](LICENSE).
 
-```
+
 
 ---
 
@@ -174,6 +174,3 @@ This project is licensed under the [MIT License](LICENSE).
 - A `LICENSE` file (MIT by default)  
 - A starter `CMakeLists.txt` so people can build without typing long g++ commands  
 - A GitHub Actions workflow for auto-build  
-
-Do you want me to draft those too?
-```
