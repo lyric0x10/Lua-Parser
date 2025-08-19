@@ -165,12 +165,3 @@ Contributions are welcome!
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
-
-
-
----
-
-👉 If you want, I can also help you set up:
-- A `LICENSE` file (MIT by default)  
-- A starter `CMakeLists.txt` so people can build without typing long g++ commands  
-- A GitHub Actions workflow for auto-build  
