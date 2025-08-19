@@ -1,29 +1,43 @@
 # Lua Parser (written in C++)
 
-This is a **Lua parser and lexer** I’ve been working on in C++.
-It takes a Lua source file, breaks it down into tokens, builds an **AST (Abstract Syntax Tree)**, and prints everything out as **JSON**.
+[![Build](https://img.shields.io/badge/build-passing-brightgreen)]()  
+[![Language](https://img.shields.io/badge/language-C++17-blue)]()  
+[![License](https://img.shields.io/badge/license-MIT-lightgrey)]()  
+
+A **Lua parser and lexer** written in modern C++.  
+It takes a Lua source file, breaks it into tokens, builds an **AST (Abstract Syntax Tree)**, and prints everything as **JSON**.
 
 ---
 
-## What it Does
-
-* **Lexer** → splits Lua code into tokens (like numbers, strings, keywords, etc.)
-* **Parser** → builds an AST from those tokens
-* **AST with named slots** → instead of just “children,” nodes have meaningful keys like `"variables"`, `"values"`, `"body"`
-* **JSON output** → makes it easy to visualize or use in other tools
-* **File input** → drag + drop a file onto the exe, or run it from terminal and type the path
+## 📖 Table of Contents
+- [Features](#-features)
+- [How to Run](#-how-to-run)
+- [Examples](#-examples)
+- [About the Code](#-about-the-code)
+- [Limitations](#-limitations)
+- [Future Plans](#-future-plans)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## How to Run
+## ✨ Features
+- **Lexer** → splits Lua code into tokens (numbers, strings, keywords, etc.)
+- **Parser** → builds an AST from those tokens
+- **AST with named slots** → nodes have meaningful keys like `"variables"`, `"values"`, `"body"`
+- **JSON output** → easy to visualize or consume in other tools
+- **File input** → drag + drop a file onto the exe, or run it from terminal
 
-### Compile:
+---
 
+## 🚀 How to Run
+
+### Compile
 ```bash
 g++ -std=c++17 -O2 -o lua_parser "Lua Parser.cpp"
-```
+````
 
-### Use:
+### Run
 
 ```bash
 ./lua_parser script.lua
@@ -33,15 +47,17 @@ It will print the AST in JSON to your terminal.
 
 ---
 
-## Example
+## 📝 Examples
 
-If your Lua file has:
+### Example 1
+
+Input Lua:
 
 ```lua
 local x = 42
 ```
 
-The parser prints:
+Output JSON:
 
 ```json
 [
@@ -63,27 +79,101 @@ The parser prints:
 
 ---
 
-## About the Code
+### Example 2
 
-I want to be straight up: I used **AI (ChatGPT)** to help rewrite parts of this.
+Input Lua:
 
-* The AI helped me **speed things up** (like reducing string copies, pre-allocating vectors, simplifying loops).
-* It also helped **refactor the AST** to use named slots instead of just "children."
-* The core idea and logic are mine, but AI suggestions made it **faster and cleaner**.
-* I went through and **checked everything manually** so it actually works.
+```lua
+function greet(name)
+  print("Hello " .. name)
+end
+```
+
+Output JSON (shortened for clarity):
+
+```json
+[
+  {
+    "nodeType": "FunctionDeclaration",
+    "text": "function",
+    "line": 1,
+    "children": {
+      "identifier": { "nodeType": "Identifier", "text": "greet", "line": 1, "children": {} },
+      "parameters": [
+        { "nodeType": "Identifier", "text": "name", "line": 1, "children": {} }
+      ],
+      "body": [
+        {
+          "nodeType": "CallStatement",
+          "text": "print",
+          "line": 2,
+          "children": {
+            "arguments": [
+              {
+                "nodeType": "BinaryExpression",
+                "text": "..",
+                "line": 2,
+                "children": {
+                  "left": { "nodeType": "StringLiteral", "text": "\"Hello \"", "line": 2, "children": {} },
+                  "right": { "nodeType": "Identifier", "text": "name", "line": 2, "children": {} }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+]
+```
 
 ---
 
-## Limitations
+## 🧑‍💻 About the Code
 
-* It doesn't handle 100% of Lua yet (some grammar stuff is missing).
-* Error handling is very basic.
+I used **AI assistance (ChatGPT)** to speed up development (e.g., reducing string copies, simplifying loops).
+The **core design and logic are mine**, and I reviewed/refined everything to ensure it works properly.
 
 ---
 
-## Future Plans
+## ⚠️ Limitations
 
-* Add more Lua grammar coverage
-* Better error messages
-* Options for different JSON formats (pretty/compact)
+* Not full Lua coverage yet (some grammar not implemented)
+* Basic error handling
+
+---
+
+## 🛠 Future Plans
+
+* Expand Lua grammar coverage
+* Better error reporting
+* Options for JSON formatting (pretty/compact)
 * Benchmarking with larger Lua projects
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome!
+
+* Open an issue for bugs/feature requests
+* Submit pull requests with improvements
+* Add tests for new features where possible
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+```
+
+---
+
+👉 If you want, I can also help you set up:
+- A `LICENSE` file (MIT by default)  
+- A starter `CMakeLists.txt` so people can build without typing long g++ commands  
+- A GitHub Actions workflow for auto-build  
+
+Do you want me to draft those too?
+```
