@@ -1,6 +1,9 @@
+// Lua Parser.cpp
+// Modified to add interactive "benchmark" mode
 #include <cassert>
 #include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -1228,17 +1231,92 @@ void printASTJson(const AST& node, std::ostream& out, int indent = 0) {
     if (!node.children.empty()) out << "\n" << ind << "  ";
     out << "}\n" << ind << "}";
 }
-
 int main(int argc, char* argv[]) {
     std::string filePath;
 
     if (argc >= 2) {
-        // Case 1: Drag & drop file
         filePath = argv[1];
     } else {
-        // Case 2: Ask user for file path
         std::cout << "Enter path to source file: ";
         std::getline(std::cin, filePath);
+    }
+
+    if (filePath == "benchmark") {
+#ifdef _WIN32
+        system("cls");
+#else
+        std::cout << "\033[2J\033[H";
+        (void)system("clear");
+#endif
+
+        std::cout << "[Benchmark] Enter path to source file: ";
+        std::getline(std::cin, filePath);
+        if (!std::filesystem::exists(filePath)) {
+            std::cerr << "Error: file not found -> " << filePath << "\n";
+            return 1;
+        }
+
+        // ask user for parameters (defaults 50, 20000)
+        std::string input;
+        int REPEAT = 50;
+        int RUNS = 20000;
+
+        std::cout << "[Benchmark] How many times to repeat the code? (default "
+                     "= 50): ";
+        std::getline(std::cin, input);
+        if (!input.empty()) {
+            try {
+                REPEAT = std::stoi(input);
+            } catch (...) {
+            }
+        }
+
+        std::cout
+            << "[Benchmark] How many runs to perform? (default = 20000): ";
+        std::getline(std::cin, input);
+        if (!input.empty()) {
+            try {
+                RUNS = std::stoi(input);
+            } catch (...) {
+            }
+        }
+
+        // Read file contents
+        std::ifstream in(filePath);
+        std::string code((std::istreambuf_iterator<char>(in)),
+                         std::istreambuf_iterator<char>());
+
+        // Build code * REPEAT
+        std::string testCode;
+        testCode.reserve(code.size() * REPEAT);
+        for (int i = 0; i < REPEAT; ++i) testCode += code;
+
+        std::cout << "[Benchmark] Running Lexer+Parse on (code * " << REPEAT
+                  << ") for " << RUNS << " iterations...\n";
+
+        auto t0 = std::chrono::high_resolution_clock::now();
+
+        static volatile size_t blackhole = 0;
+        for (int i = 0; i < RUNS; ++i) {
+            auto tokens = Lexer(testCode);
+            auto chunk = Parse(tokens);
+            blackhole += chunk.size();
+        }
+
+        auto t1 = std::chrono::high_resolution_clock::now();
+        double total_ms =
+            std::chrono::duration_cast<
+                std::chrono::duration<double, std::milli>>(t1 - t0)
+                .count();
+        double avg_ms = total_ms / double(RUNS);
+
+        std::cout << std::fixed << std::setprecision(3);
+        std::cout << "[Benchmark] Total time: " << total_ms << " ms\n";
+        std::cout << "[Benchmark] Average per run (lex+parse): " << avg_ms
+                  << " ms\n";
+        std::cout << "[Benchmark] blackhole (sum of chunk sizes): " << blackhole
+                  << "\n";
+        return 0;
     }
 
     if (!std::filesystem::exists(filePath)) {
@@ -1246,16 +1324,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Read file contents
     std::ifstream in(filePath);
     std::string code((std::istreambuf_iterator<char>(in)),
                      std::istreambuf_iterator<char>());
 
-    // Run lexer + parser
     auto tokens = Lexer(code);
     auto chunk = Parse(tokens);
 
-    // Print JSON AST
     std::cout << "[\n";
     for (size_t i = 0; i < chunk.size(); ++i) {
         printASTJson(chunk[i], std::cout, 2);
