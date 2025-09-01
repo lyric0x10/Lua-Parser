@@ -1338,6 +1338,8 @@ int main(int argc, char* argv[]) {
             << " ms\n";
         std::cout << "[Benchmark] blackhole (sum of chunk sizes): " << blackhole
             << "\n";
+        std::cout << "\nPress Enter to exit...";
+        std::cin.ignore();
         return 0;
     }
 
