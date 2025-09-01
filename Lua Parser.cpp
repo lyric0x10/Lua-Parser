@@ -128,11 +128,11 @@ enum class ASTType {
 
 struct AST {
     ASTType type;
-    std::string text;
+    string text;
     int line;
 
     // named slots -> lists of child nodes
-    std::unordered_map<std::string, std::vector<AST>> children;
+    unordered_map<string, vector<AST>> children;
 };
 
 // ---------------- Helpers ----------------
@@ -153,58 +153,58 @@ static inline TokenType keywordTypeFast(const sv& w) noexcept {
     if (w.empty()) return TokenType::IDENTIFIER;
     char c = w[0];
     switch (c) {
-    case 'a':
-        if (w == "and") return TokenType::AND;
-        break;
-    case 'b':
-        if (w == "break") return TokenType::BREAK;
-        break;
-    case 'd':
-        if (w == "do") return TokenType::DO;
-        break;
-    case 'e':
-        if (w == "else") return TokenType::ELSE;
-        if (w == "elseif") return TokenType::ELSEIF;
-        if (w == "end") return TokenType::END;
-        break;
-    case 'f':
-        if (w == "false") return TokenType::FALSE_;
-        if (w == "for") return TokenType::FOR;
-        if (w == "function") return TokenType::FUNCTION;
-        break;
-    case 'g':
-        if (w == "goto") return TokenType::GOTO;
-        break;
-    case 'i':
-        if (w == "if") return TokenType::IF;
-        if (w == "in") return TokenType::IN;
-        break;
-    case 'l':
-        if (w == "local") return TokenType::LOCAL;
-        break;
-    case 'n':
-        if (w == "nil") return TokenType::NIL;
-        if (w == "not") return TokenType::NOT;
-        break;
-    case 'o':
-        if (w == "or") return TokenType::OR;
-        break;
-    case 'r':
-        if (w == "repeat") return TokenType::REPEAT;
-        if (w == "return") return TokenType::RETURN;
-        break;
-    case 't':
-        if (w == "then") return TokenType::THEN;
-        if (w == "true") return TokenType::TRUE_;
-        break;
-    case 'u':
-        if (w == "until") return TokenType::UNTIL;
-        break;
-    case 'w':
-        if (w == "while") return TokenType::WHILE;
-        break;
-    default:
-        break;
+        case 'a':
+            if (w == "and") return TokenType::AND;
+            break;
+        case 'b':
+            if (w == "break") return TokenType::BREAK;
+            break;
+        case 'd':
+            if (w == "do") return TokenType::DO;
+            break;
+        case 'e':
+            if (w == "else") return TokenType::ELSE;
+            if (w == "elseif") return TokenType::ELSEIF;
+            if (w == "end") return TokenType::END;
+            break;
+        case 'f':
+            if (w == "false") return TokenType::FALSE_;
+            if (w == "for") return TokenType::FOR;
+            if (w == "function") return TokenType::FUNCTION;
+            break;
+        case 'g':
+            if (w == "goto") return TokenType::GOTO;
+            break;
+        case 'i':
+            if (w == "if") return TokenType::IF;
+            if (w == "in") return TokenType::IN;
+            break;
+        case 'l':
+            if (w == "local") return TokenType::LOCAL;
+            break;
+        case 'n':
+            if (w == "nil") return TokenType::NIL;
+            if (w == "not") return TokenType::NOT;
+            break;
+        case 'o':
+            if (w == "or") return TokenType::OR;
+            break;
+        case 'r':
+            if (w == "repeat") return TokenType::REPEAT;
+            if (w == "return") return TokenType::RETURN;
+            break;
+        case 't':
+            if (w == "then") return TokenType::THEN;
+            if (w == "true") return TokenType::TRUE_;
+            break;
+        case 'u':
+            if (w == "until") return TokenType::UNTIL;
+            break;
+        case 'w':
+            if (w == "while") return TokenType::WHILE;
+            break;
+        default:
+            break;
     }
     return TokenType::IDENTIFIER;
 }
@@ -222,10 +222,10 @@ vector<Token> Lexer(const string& Code) {
     auto peek = [&](size_t off = 0) -> char {
         size_t p = idx + off;
         return (p < Len) ? data[p] : '\0';
-        };
+    };
     auto pushTok = [&](TokenType ttype, size_t start, size_t length) {
-        tokens.push_back(Token{ ttype, sv(data + start, length), line });
-        };
+        tokens.push_back(Token{ttype, sv(data + start, length), line});
+    };
 
     while (idx < Len) {
         char c = data[idx];
@@ -241,196 +241,190 @@ vector<Token> Lexer(const string& Code) {
         }  // skip other controls & whitespace quickly
 
         switch (c) {
-        case '(':
-            pushTok(TokenType::LEFT_PAREN, idx, 1);
-            ++idx;
-            continue;
-        case ')':
-            pushTok(TokenType::RIGHT_PAREN, idx, 1);
-            ++idx;
-            continue;
-        case '{':
-            pushTok(TokenType::LEFT_BRACE, idx, 1);
-            ++idx;
-            continue;
-        case '}':
-            pushTok(TokenType::RIGHT_BRACE, idx, 1);
-            ++idx;
-            continue;
-        case '[': {
-            if (peek(1) == '[' || peek(1) == '=') {
-                size_t check = idx + 1;
-                int eqs = 0;
-                while (check < Len && data[check] == '=') {
-                    ++eqs;
-                    ++check;
-                }
-                if (check < Len && data[check] == '[') {
-                    bool isComment = (idx >= 2 && data[idx - 2] == '-' &&
-                        data[idx - 1] == '-');
-                    idx = check + 1;
-                    size_t start = idx;
-                    bool closed = false;
-                    while (idx < Len) {
-                        if (data[idx] == ']') {
-                            size_t closing = idx + 1;
-                            int eqCount = 0;
-                            while (closing < Len && data[closing] == '=') {
-                                ++eqCount;
-                                ++closing;
+            case '(':
+                pushTok(TokenType::LEFT_PAREN, idx, 1);
+                ++idx;
+                continue;
+            case ')':
+                pushTok(TokenType::RIGHT_PAREN, idx, 1);
+                ++idx;
+                continue;
+            case '{':
+                pushTok(TokenType::LEFT_BRACE, idx, 1);
+                ++idx;
+                continue;
+            case '}':
+                pushTok(TokenType::RIGHT_BRACE, idx, 1);
+                ++idx;
+                continue;
+            case '[': {
+                if (peek(1) == '[' || peek(1) == '=') {
+                    size_t check = idx + 1;
+                    int eqs = 0;
+                    while (check < Len && data[check] == '=') {
+                        ++eqs;
+                        ++check;
+                    }
+                    if (check < Len && data[check] == '[') {
+                        bool isComment = (idx >= 2 && data[idx - 2] == '-' &&
+                                          data[idx - 1] == '-');
+                        idx = check + 1;
+                        size_t start = idx;
+                        bool closed = false;
+                        while (idx < Len) {
+                            if (data[idx] == ']') {
+                                size_t closing = idx + 1;
+                                int eqCount = 0;
+                                while (closing < Len && data[closing] == '=') {
+                                    ++eqCount;
+                                    ++closing;
+                                }
+                                if (closing < Len && data[closing] == ']' &&
+                                    eqCount == eqs) {
+                                    if (!isComment)
+                                        pushTok(TokenType::STRING, start,
+                                                idx - start);
+                                    idx = closing + 1;
+                                    closed = true;
+                                    break;
+                                }
                             }
-                            if (closing < Len && data[closing] == ']' &&
-                                eqCount == eqs) {
-                                if (!isComment)
-                                    pushTok(TokenType::STRING, start,
-                                        idx - start);
-                                idx = closing + 1;
-                                closed = true;
-                                break;
-                            }
+                            if (data[idx] == '\n') ++line;
+                            ++idx;
                         }
-                        if (data[idx] == '\n') ++line;
-                        ++idx;
+                        if (!closed) {
+                            if (!isComment)
+                                pushTok(TokenType::STRING, start, idx - start);
+                        }
+                        continue;
                     }
-                    if (!closed) {
-                        if (!isComment)
-                            pushTok(TokenType::STRING, start, idx - start);
-                    }
+                }
+                pushTok(TokenType::LEFT_BRACKET, idx, 1);
+                ++idx;
+                continue;
+            }
+            case ']':
+                pushTok(TokenType::RIGHT_BRACKET, idx, 1);
+                ++idx;
+                continue;
+            case ',':
+                pushTok(TokenType::COMMA, idx, 1);
+                ++idx;
+                continue;
+            case ';':
+                pushTok(TokenType::SEMICOLON, idx, 1);
+                ++idx;
+                continue;
+            case '+':
+                pushTok(TokenType::PLUS, idx, 1);
+                ++idx;
+                continue;
+            case '*':
+                pushTok(TokenType::STAR, idx, 1);
+                ++idx;
+                continue;
+            case '/':
+                pushTok(TokenType::SLASH, idx, 1);
+                ++idx;
+                continue;
+            case ':':
+                pushTok(TokenType::COLON, idx, 1);
+                ++idx;
+                continue;
+            case '%':
+                pushTok(TokenType::PERCENT, idx, 1);
+                ++idx;
+                continue;
+            case '^':
+                pushTok(TokenType::CARET, idx, 1);
+                ++idx;
+                continue;
+            case '#':
+                pushTok(TokenType::HASH, idx, 1);
+                ++idx;
+                continue;
+            case '.': {
+                if (peek(1) == '.' && peek(2) == '.') {
+                    pushTok(TokenType::DOT_DOT_DOT, idx, 3);
+                    idx += 3;
+                } else if (peek(1) == '.') {
+                    pushTok(TokenType::DOT_DOT, idx, 2);
+                    idx += 2;
+                } else {
+                    pushTok(TokenType::DOT, idx, 1);
+                    ++idx;
+                }
+                continue;
+            }
+            case '-': {
+                if (peek(1) == '-') {
+                    idx += 2;
+                    if (peek() == '[') continue;
+                    while (idx < Len && data[idx] != '\n') ++idx;
+                    continue;
+                }
+                pushTok(TokenType::MINUS, idx, 1);
+                ++idx;
+                continue;
+            }
+            case '=': {
+                if (peek(1) == '=') {
+                    pushTok(TokenType::EQUAL_EQUAL, idx, 2);
+                    idx += 2;
+                } else {
+                    pushTok(TokenType::EQUAL, idx, 1);
+                    ++idx;
+                }
+                continue;
+            }
+            case '~': {
+                if (peek(1) == '=') {
+                    pushTok(TokenType::BANG_EQUAL, idx, 2);
+                    idx += 2;
+                } else {
+                    ++idx;
                     continue;
                 }
             }
-            pushTok(TokenType::LEFT_BRACKET, idx, 1);
-            ++idx;
-            continue;
-        }
-        case ']':
-            pushTok(TokenType::RIGHT_BRACKET, idx, 1);
-            ++idx;
-            continue;
-        case ',':
-            pushTok(TokenType::COMMA, idx, 1);
-            ++idx;
-            continue;
-        case ';':
-            pushTok(TokenType::SEMICOLON, idx, 1);
-            ++idx;
-            continue;
-        case '+':
-            pushTok(TokenType::PLUS, idx, 1);
-            ++idx;
-            continue;
-        case '*':
-            pushTok(TokenType::STAR, idx, 1);
-            ++idx;
-            continue;
-        case '/':
-            pushTok(TokenType::SLASH, idx, 1);
-            ++idx;
-            continue;
-        case ':':
-            pushTok(TokenType::COLON, idx, 1);
-            ++idx;
-            continue;
-        case '%':
-            pushTok(TokenType::PERCENT, idx, 1);
-            ++idx;
-            continue;
-        case '^':
-            pushTok(TokenType::CARET, idx, 1);
-            ++idx;
-            continue;
-        case '#':
-            pushTok(TokenType::HASH, idx, 1);
-            ++idx;
-            continue;
-        case '.': {
-            if (peek(1) == '.' && peek(2) == '.') {
-                pushTok(TokenType::DOT_DOT_DOT, idx, 3);
-                idx += 3;
-            }
-            else if (peek(1) == '.') {
-                pushTok(TokenType::DOT_DOT, idx, 2);
-                idx += 2;
-            }
-            else {
-                pushTok(TokenType::DOT, idx, 1);
-                ++idx;
-            }
-            continue;
-        }
-        case '-': {
-            if (peek(1) == '-') {
-                idx += 2;
-                if (peek() == '[') continue;
-                while (idx < Len && data[idx] != '\n') ++idx;
-                continue;
-            }
-            pushTok(TokenType::MINUS, idx, 1);
-            ++idx;
-            continue;
-        }
-        case '=': {
-            if (peek(1) == '=') {
-                pushTok(TokenType::EQUAL_EQUAL, idx, 2);
-                idx += 2;
-            }
-            else {
-                pushTok(TokenType::EQUAL, idx, 1);
-                ++idx;
-            }
-            continue;
-        }
-        case '~': {
-            if (peek(1) == '=') {
-                pushTok(TokenType::BANG_EQUAL, idx, 2);
-                idx += 2;
-            }
-            else {
-                ++idx;
-                continue;
-            }
-        }
-        case '<': {
-            if (peek(1) == '=') {
-                pushTok(TokenType::LESS_EQUAL, idx, 2);
-                idx += 2;
-            }
-            else {
-                pushTok(TokenType::LESS, idx, 1);
-                ++idx;
-            }
-            continue;
-        }
-        case '>': {
-            if (peek(1) == '=') {
-                pushTok(TokenType::GREATER_EQUAL, idx, 2);
-                idx += 2;
-            }
-            else {
-                pushTok(TokenType::GREATER, idx, 1);
-                ++idx;
-            }
-            continue;
-        }
-        case '"':
-        case '\'': {
-            char q = c;
-            size_t start = idx + 1;
-            ++idx;
-            while (idx < Len && data[idx] != q) {
-                if (data[idx] == '\n') ++line;
-                if (data[idx] == '\\' && idx + 1 < Len)
+            case '<': {
+                if (peek(1) == '=') {
+                    pushTok(TokenType::LESS_EQUAL, idx, 2);
                     idx += 2;
-                else
+                } else {
+                    pushTok(TokenType::LESS, idx, 1);
                     ++idx;
+                }
+                continue;
             }
-            pushTok(TokenType::STRING, start,
-                (idx < Len ? idx - start : idx - start));
-            if (idx < Len && data[idx] == q) ++idx;
-            continue;
-        }
-        default:
-            break;
+            case '>': {
+                if (peek(1) == '=') {
+                    pushTok(TokenType::GREATER_EQUAL, idx, 2);
+                    idx += 2;
+                } else {
+                    pushTok(TokenType::GREATER, idx, 1);
+                    ++idx;
+                }
+                continue;
+            }
+            case '"':
+            case '\'': {
+                char q = c;
+                size_t start = idx + 1;
+                ++idx;
+                while (idx < Len && data[idx] != q) {
+                    if (data[idx] == '\n') ++line;
+                    if (data[idx] == '\\' && idx + 1 < Len)
+                        idx += 2;
+                    else
+                        ++idx;
+                }
+                pushTok(TokenType::STRING, start,
+                        (idx < Len ? idx - start : idx - start));
+                if (idx < Len && data[idx] == q) ++idx;
+                continue;
+            }
+            default:
+                break;
         }
 
         // numbers
@@ -439,15 +433,14 @@ vector<Token> Lexer(const string& Code) {
             if (c == '0' && (peek(1) == 'x' || peek(1) == 'X')) {
                 idx += 2;
                 while (idx < Len &&
-                    (isxdigit((unsigned char)data[idx]) || data[idx] == '.'))
+                       (isxdigit((unsigned char)data[idx]) || data[idx] == '.'))
                     ++idx;
                 if (idx < Len && (data[idx] == 'p' || data[idx] == 'P')) {
                     ++idx;
                     if (peek() == '+' || peek() == '-') ++idx;
                     while (idx < Len && is_digit(data[idx])) ++idx;
                 }
-            }
-            else {
+            } else {
                 while (idx < Len && is_digit(data[idx])) ++idx;
                 if (peek() == '.') {
                     ++idx;
@@ -478,7 +471,7 @@ vector<Token> Lexer(const string& Code) {
         ++idx;
     }
 
-    tokens.push_back(Token{ TokenType::END_OF_FILE, sv(), line });
+    tokens.push_back(Token{TokenType::END_OF_FILE, sv(), line});
     return tokens;
 }
 
@@ -486,30 +479,30 @@ vector<Token> Lexer(const string& Code) {
 
 static inline int precedenceOf(const Token& t) noexcept {
     switch (t.type) {
-    case TokenType::OR:
-        return 1;
-    case TokenType::AND:
-        return 2;
-    case TokenType::LESS:
-    case TokenType::LESS_EQUAL:
-    case TokenType::GREATER:
-    case TokenType::GREATER_EQUAL:
-    case TokenType::EQUAL_EQUAL:
-    case TokenType::BANG_EQUAL:
-        return 3;
-    case TokenType::DOT_DOT:
-        return 4;
-    case TokenType::PLUS:
-    case TokenType::MINUS:
-        return 5;
-    case TokenType::STAR:
-    case TokenType::SLASH:
-    case TokenType::PERCENT:
-        return 6;
-    case TokenType::CARET:
-        return 8;
-    default:
-        return 0;
+        case TokenType::OR:
+            return 1;
+        case TokenType::AND:
+            return 2;
+        case TokenType::LESS:
+        case TokenType::LESS_EQUAL:
+        case TokenType::GREATER:
+        case TokenType::GREATER_EQUAL:
+        case TokenType::EQUAL_EQUAL:
+        case TokenType::BANG_EQUAL:
+            return 3;
+        case TokenType::DOT_DOT:
+            return 4;
+        case TokenType::PLUS:
+        case TokenType::MINUS:
+            return 5;
+        case TokenType::STAR:
+        case TokenType::SLASH:
+        case TokenType::PERCENT:
+            return 6;
+        case TokenType::CARET:
+            return 8;
+        default:
+            return 0;
     }
 }
 static inline bool isRightAssociative(const Token& t) noexcept {
@@ -523,7 +516,7 @@ inline AST makeLeaf(ASTType t, const sv& txt, int line) {
     AST a;
     a.type = t;
     a.text.assign(txt.begin(),
-        txt.end());  // convert string_view to string once
+                  txt.end());  // convert string_view to string once
     a.line = line;
     a.children.clear();
     return a;
@@ -534,124 +527,123 @@ AST parsePrimary(const vector<Token>& Tokens, int& Index) {
         return makeLeaf(ASTType::Identifier, "<?>", 0);
     const Token& tk = Tokens[Index];
     switch (tk.type) {
-    case TokenType::NUMBER:
-        ++Index;
-        return makeLeaf(ASTType::NumericLiteral, tk.text, tk.line);
-    case TokenType::STRING:
-        ++Index;
-        return makeLeaf(ASTType::StringLiteral, tk.text, tk.line);
-    case TokenType::TRUE_:
-    case TokenType::FALSE_:
-        ++Index;
-        return makeLeaf(ASTType::BooleanLiteral, tk.text, tk.line);
-    case TokenType::NIL:
-        ++Index;
-        return makeLeaf(ASTType::NilLiteral, "nil", tk.line);
-    case TokenType::IDENTIFIER:
-        ++Index;
-        return makeLeaf(ASTType::Identifier, tk.text, tk.line);
-    case TokenType::DOT_DOT_DOT:
-        ++Index;
-        return makeLeaf(ASTType::VarargLiteral, "...", tk.line);
-    case TokenType::LEFT_PAREN: {
-        ++Index;
-        AST inner = parseExpressionForwardDecl(Tokens, Index);
-        if (Index < (int)Tokens.size() &&
-            Tokens[Index].type == TokenType::RIGHT_PAREN)
+        case TokenType::NUMBER:
             ++Index;
-        return inner;
-    }
-    case TokenType::LEFT_BRACE: {
-        int line = tk.line;
-        ++Index;
-        vector<AST> elements;
-        elements.reserve(4);
-        while (Index < (int)Tokens.size() &&
-            Tokens[Index].type != TokenType::RIGHT_BRACE) {
-            AST val = parseExpressionForwardDecl(Tokens, Index);
-            AST tv = makeLeaf(ASTType::TableValue, sv(), val.line);
-            // named slot for value
-            tv.children["value"].push_back(std::move(val));
-            elements.emplace_back(std::move(tv));
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::COMMA)
-                ++Index;
-            else
-                break;
-        }
-        if (Index < (int)Tokens.size() &&
-            Tokens[Index].type == TokenType::RIGHT_BRACE)
+            return makeLeaf(ASTType::NumericLiteral, tk.text, tk.line);
+        case TokenType::STRING:
             ++Index;
-        AST table =
-            makeLeaf(ASTType::TableConstructorExpression, sv(), line);
-        table.children["fields"] = std::move(elements);
-        return table;
-    }
-    case TokenType::FUNCTION: {
-        int line = tk.line;
-        ++Index;
-        if (Index < (int)Tokens.size() &&
-            Tokens[Index].type == TokenType::LEFT_PAREN) {
+            return makeLeaf(ASTType::StringLiteral, tk.text, tk.line);
+        case TokenType::TRUE_:
+        case TokenType::FALSE_:
             ++Index;
-            vector<AST> params;
-            params.reserve(4);
-            while (Index < (int)Tokens.size() &&
-                Tokens[Index].type != TokenType::RIGHT_PAREN) {
-                if (Tokens[Index].type == TokenType::IDENTIFIER) {
-                    params.push_back(makeLeaf(ASTType::Identifier,
-                        Tokens[Index].text,
-                        Tokens[Index].line));
-                    ++Index;
-                    if (Index < (int)Tokens.size() &&
-                        Tokens[Index].type == TokenType::COMMA)
-                        ++Index;
-                }
-                else
-                    ++Index;
-            }
+            return makeLeaf(ASTType::BooleanLiteral, tk.text, tk.line);
+        case TokenType::NIL:
+            ++Index;
+            return makeLeaf(ASTType::NilLiteral, "nil", tk.line);
+        case TokenType::IDENTIFIER:
+            ++Index;
+            return makeLeaf(ASTType::Identifier, tk.text, tk.line);
+        case TokenType::DOT_DOT_DOT:
+            ++Index;
+            return makeLeaf(ASTType::VarargLiteral, "...", tk.line);
+        case TokenType::LEFT_PAREN: {
+            ++Index;
+            AST inner = parseExpressionForwardDecl(Tokens, Index);
             if (Index < (int)Tokens.size() &&
                 Tokens[Index].type == TokenType::RIGHT_PAREN)
                 ++Index;
-            vector<AST> body;
-            body.reserve(8);
+            return inner;
+        }
+        case TokenType::LEFT_BRACE: {
+            int line = tk.line;
+            ++Index;
+            vector<AST> elements;
+            elements.reserve(4);
             while (Index < (int)Tokens.size() &&
-                Tokens[Index].type != TokenType::END) {
-                if (Tokens[Index].type == TokenType::RETURN) {
-                    int rline = Tokens[Index].line;
+                   Tokens[Index].type != TokenType::RIGHT_BRACE) {
+                AST val = parseExpressionForwardDecl(Tokens, Index);
+                AST tv = makeLeaf(ASTType::TableValue, sv(), val.line);
+                // named slot for value
+                tv.children["value"].push_back(move(val));
+                elements.emplace_back(move(tv));
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::COMMA)
                     ++Index;
+                else
+                    break;
+            }
+            if (Index < (int)Tokens.size() &&
+                Tokens[Index].type == TokenType::RIGHT_BRACE)
+                ++Index;
+            AST table =
+                makeLeaf(ASTType::TableConstructorExpression, sv(), line);
+            table.children["fields"] = move(elements);
+            return table;
+        }
+        case TokenType::FUNCTION: {
+            int line = tk.line;
+            ++Index;
+            if (Index < (int)Tokens.size() &&
+                Tokens[Index].type == TokenType::LEFT_PAREN) {
+                ++Index;
+                vector<AST> params;
+                params.reserve(4);
+                while (Index < (int)Tokens.size() &&
+                       Tokens[Index].type != TokenType::RIGHT_PAREN) {
+                    if (Tokens[Index].type == TokenType::IDENTIFIER) {
+                        params.push_back(makeLeaf(ASTType::Identifier,
+                                                  Tokens[Index].text,
+                                                  Tokens[Index].line));
+                        ++Index;
+                        if (Index < (int)Tokens.size() &&
+                            Tokens[Index].type == TokenType::COMMA)
+                            ++Index;
+                    } else
+                        ++Index;
+                }
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::RIGHT_PAREN)
+                    ++Index;
+                vector<AST> body;
+                body.reserve(8);
+                while (Index < (int)Tokens.size() &&
+                       Tokens[Index].type != TokenType::END) {
+                    if (Tokens[Index].type == TokenType::RETURN) {
+                        int rline = Tokens[Index].line;
+                        ++Index;
+                        AST ev = parseExpressionForwardDecl(Tokens, Index);
+                        AST ret = makeLeaf(ASTType::ReturnStatement,
+                                           sv("return"), rline);
+                        ret.children["values"].push_back(move(ev));
+                        body.push_back(move(ret));
+                        if (Index < (int)Tokens.size() &&
+                            Tokens[Index].type == TokenType::SEMICOLON)
+                            ++Index;
+                        continue;
+                    }
                     AST ev = parseExpressionForwardDecl(Tokens, Index);
-                    AST ret = makeLeaf(ASTType::ReturnStatement,
-                        sv("return"), rline);
-                    ret.children["values"].push_back(std::move(ev));
-                    body.push_back(std::move(ret));
+                    body.push_back(move(ev));
                     if (Index < (int)Tokens.size() &&
                         Tokens[Index].type == TokenType::SEMICOLON)
                         ++Index;
-                    continue;
                 }
-                AST ev = parseExpressionForwardDecl(Tokens, Index);
-                body.push_back(std::move(ev));
                 if (Index < (int)Tokens.size() &&
-                    Tokens[Index].type == TokenType::SEMICOLON)
+                    Tokens[Index].type == TokenType::END)
                     ++Index;
+                AST fn = makeLeaf(ASTType::FunctionExpression, sv(), line);
+
+                AST blk = makeLeaf(ASTType::Block, sv("body"), line);
+                blk.children["statements"] = move(body);
+
+                fn.children["body"].push_back(move(blk));
+                if (!params.empty()) fn.children["params"] = move(params);
+                return fn;
             }
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::END)
-                ++Index;
-            AST fn = makeLeaf(ASTType::FunctionExpression, sv(), line);
-
-            AST blk = makeLeaf(ASTType::Block, sv("body"), line);
-            blk.children["statements"] = std::move(body);
-
-            fn.children["body"].push_back(std::move(blk));
-            if (!params.empty()) fn.children["params"] = std::move(params);
-            return fn;
+            return makeLeaf(ASTType::FunctionExpression, sv(), tk.line);
         }
-        return makeLeaf(ASTType::FunctionExpression, sv(), tk.line);
-    }
-    default:
-        ++Index;
-        return makeLeaf(ASTType::Identifier, sv("?"), tk.line);
+        default:
+            ++Index;
+            return makeLeaf(ASTType::Identifier, sv("?"), tk.line);
     }
 }
 
@@ -664,37 +656,35 @@ AST parseSuffixed(const vector<Token>& Tokens, int& Index) {
             if (Index < (int)Tokens.size() &&
                 Tokens[Index].type == TokenType::IDENTIFIER) {
                 AST member = makeLeaf(ASTType::Identifier, Tokens[Index].text,
-                    Tokens[Index].line);
+                                      Tokens[Index].line);
                 ++Index;
                 AST node = makeLeaf(ASTType::MemberExpression, sv("."), t.line);
                 // named slots
-                node.children["object"].push_back(std::move(expr));
-                node.children["property"].push_back(std::move(member));
-                expr = std::move(node);
+                node.children["object"].push_back(move(expr));
+                node.children["property"].push_back(move(member));
+                expr = move(node);
                 continue;
             }
             break;
-        }
-        else if (t.type == TokenType::LEFT_BRACKET) {
+        } else if (t.type == TokenType::LEFT_BRACKET) {
             ++Index;
             AST key = parseExpressionForwardDecl(Tokens, Index);
             if (Index < (int)Tokens.size() &&
                 Tokens[Index].type == TokenType::RIGHT_BRACKET)
                 ++Index;
             AST node = makeLeaf(ASTType::IndexExpression, sv("[]"), t.line);
-            node.children["object"].push_back(std::move(expr));
-            node.children["index"].push_back(std::move(key));
-            expr = std::move(node);
+            node.children["object"].push_back(move(expr));
+            node.children["index"].push_back(move(key));
+            expr = move(node);
             continue;
-        }
-        else if (t.type == TokenType::LEFT_PAREN) {
+        } else if (t.type == TokenType::LEFT_PAREN) {
             ++Index;
             vector<AST> args;
             args.reserve(4);
             while (Index < (int)Tokens.size() &&
-                Tokens[Index].type != TokenType::RIGHT_PAREN) {
+                   Tokens[Index].type != TokenType::RIGHT_PAREN) {
                 AST a = parseExpressionForwardDecl(Tokens, Index);
-                args.push_back(std::move(a));
+                args.push_back(move(a));
                 if (Index < (int)Tokens.size() &&
                     Tokens[Index].type == TokenType::COMMA)
                     ++Index;
@@ -705,12 +695,11 @@ AST parseSuffixed(const vector<Token>& Tokens, int& Index) {
                 Tokens[Index].type == TokenType::RIGHT_PAREN)
                 ++Index;
             AST node = makeLeaf(ASTType::CallExpression, sv("call"), t.line);
-            node.children["callee"].push_back(std::move(expr));
-            if (!args.empty()) node.children["arguments"] = std::move(args);
-            expr = std::move(node);
+            node.children["callee"].push_back(move(expr));
+            if (!args.empty()) node.children["arguments"] = move(args);
+            expr = move(node);
             continue;
-        }
-        else
+        } else
             break;
     }
     return expr;
@@ -726,7 +715,7 @@ AST parseBinary(const vector<Token>& Tokens, int& Index, int minPrec) {
         ++Index;
         AST right = parseBinary(Tokens, Index, 9);
         AST un = makeLeaf(ASTType::UnaryExpression, t.text, line);
-        un.children["argument"].push_back(std::move(right));
+        un.children["argument"].push_back(move(right));
         return un;
     }
 
@@ -740,9 +729,9 @@ AST parseBinary(const vector<Token>& Tokens, int& Index, int minPrec) {
         int nextMin = prec + (isRightAssociative(op) ? 0 : 1);
         AST right = parseBinary(Tokens, Index, nextMin);
         AST bin = makeLeaf(ASTType::BinaryExpression, op.text, op.line);
-        bin.children["left"].push_back(std::move(left));
-        bin.children["right"].push_back(std::move(right));
-        left = std::move(bin);
+        bin.children["left"].push_back(move(left));
+        bin.children["right"].push_back(move(right));
+        left = move(bin);
     }
     return left;
 }
@@ -756,7 +745,7 @@ vector<AST> parseExpressionList(const vector<Token>& Tokens, int& Index) {
     if (Index >= (int)Tokens.size()) return res;
     res.push_back(parseExpressionForwardDecl(Tokens, Index));
     while (Index < (int)Tokens.size() &&
-        Tokens[Index].type == TokenType::COMMA) {
+           Tokens[Index].type == TokenType::COMMA) {
         ++Index;
         res.push_back(parseExpressionForwardDecl(Tokens, Index));
     }
@@ -773,325 +762,318 @@ vector<AST> Parse(const vector<Token>& Tokens) {
     while (Running && Index < (int)Tokens.size()) {
         const Token& t = Tokens[Index];
         switch (t.type) {
-        case TokenType::END_OF_FILE:
-            Running = false;
-            break;
-        case TokenType::SEMICOLON:
-            ++Index;
-            break;
-        case TokenType::LOCAL: {
-            int line = t.line;
-            ++Index;
-            vector<AST> vars;
-            vars.reserve(4);
-            while (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::IDENTIFIER) {
-                vars.push_back(makeLeaf(ASTType::Identifier,
-                    Tokens[Index].text,
-                    Tokens[Index].line));
+            case TokenType::END_OF_FILE:
+                Running = false;
+                break;
+            case TokenType::SEMICOLON:
                 ++Index;
-                if (Index < (int)Tokens.size() &&
-                    Tokens[Index].type == TokenType::COMMA)
+                break;
+            case TokenType::LOCAL: {
+                int line = t.line;
+                ++Index;
+                vector<AST> vars;
+                vars.reserve(4);
+                while (Index < (int)Tokens.size() &&
+                       Tokens[Index].type == TokenType::IDENTIFIER) {
+                    vars.push_back(makeLeaf(ASTType::Identifier,
+                                            Tokens[Index].text,
+                                            Tokens[Index].line));
                     ++Index;
-                else
-                    break;
+                    if (Index < (int)Tokens.size() &&
+                        Tokens[Index].type == TokenType::COMMA)
+                        ++Index;
+                    else
+                        break;
+                }
+                vector<AST> vals;
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::EQUAL) {
+                    ++Index;
+                    vals = parseExpressionList(Tokens, Index);
+                }
+                AST node = makeLeaf(ASTType::LocalStatement, sv("local"), line);
+                if (!vars.empty()) node.children["variables"] = move(vars);
+                if (!vals.empty()) node.children["values"] = move(vals);
+                Chunk.push_back(move(node));
+                break;
             }
-            vector<AST> vals;
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::EQUAL) {
+            case TokenType::RETURN: {
+                int line = t.line;
                 ++Index;
-                vals = parseExpressionList(Tokens, Index);
-            }
-            AST node = makeLeaf(ASTType::LocalStatement, sv("local"), line);
-            if (!vars.empty()) node.children["variables"] = std::move(vars);
-            if (!vals.empty()) node.children["values"] = std::move(vals);
-            Chunk.push_back(std::move(node));
-            break;
-        }
-        case TokenType::RETURN: {
-            int line = t.line;
-            ++Index;
-            vector<AST> vals;
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type != TokenType::SEMICOLON) {
-                vals = parseExpressionList(Tokens, Index);
-            }
-            AST node =
-                makeLeaf(ASTType::ReturnStatement, sv("return"), line);
-            if (!vals.empty()) node.children["values"] = std::move(vals);
-            Chunk.push_back(std::move(node));
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::SEMICOLON)
-                ++Index;
-            break;
-        }
-        case TokenType::IF: {
-            int line = t.line;
-            ++Index;
-            AST cond = parseExpressionForwardDecl(Tokens, Index);
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::THEN)
-                ++Index;
-            vector<AST> clauses;
-
-            // then block
-            vector<AST> thenBlock;
-            thenBlock.reserve(8);
-            while (Index < (int)Tokens.size() &&
-                Tokens[Index].type != TokenType::ELSE &&
-                Tokens[Index].type != TokenType::ELSEIF &&
-                Tokens[Index].type != TokenType::END) {
-                AST node = parseExpressionForwardDecl(Tokens, Index);
-                thenBlock.push_back(std::move(node));
+                vector<AST> vals;
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type != TokenType::SEMICOLON) {
+                    vals = parseExpressionList(Tokens, Index);
+                }
+                AST node =
+                    makeLeaf(ASTType::ReturnStatement, sv("return"), line);
+                if (!vals.empty()) node.children["values"] = move(vals);
+                Chunk.push_back(move(node));
                 if (Index < (int)Tokens.size() &&
                     Tokens[Index].type == TokenType::SEMICOLON)
                     ++Index;
-                if (Index >= (int)Tokens.size()) break;
+                break;
             }
-            AST ifcl = makeLeaf(ASTType::IfClause, sv("if"), line);
-            ifcl.children["condition"].push_back(std::move(cond));
-            AST thenblk = makeLeaf(ASTType::Block, sv("then"), line);
-            if (!thenBlock.empty())
-                thenblk.children["statements"] = std::move(thenBlock);
-            ifcl.children["body"].push_back(std::move(thenblk));
-            clauses.push_back(std::move(ifcl));
-
-            while (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::ELSEIF) {
-                int elifLine = Tokens[Index].line;
+            case TokenType::IF: {
+                int line = t.line;
                 ++Index;
-                AST elifCond = parseExpressionForwardDecl(Tokens, Index);
+                AST cond = parseExpressionForwardDecl(Tokens, Index);
                 if (Index < (int)Tokens.size() &&
                     Tokens[Index].type == TokenType::THEN)
                     ++Index;
-                vector<AST> elifBlock;
+                vector<AST> clauses;
+
+                // then block
+                vector<AST> thenBlock;
+                thenBlock.reserve(8);
                 while (Index < (int)Tokens.size() &&
-                    Tokens[Index].type != TokenType::ELSE &&
-                    Tokens[Index].type != TokenType::ELSEIF &&
-                    Tokens[Index].type != TokenType::END) {
+                       Tokens[Index].type != TokenType::ELSE &&
+                       Tokens[Index].type != TokenType::ELSEIF &&
+                       Tokens[Index].type != TokenType::END) {
                     AST node = parseExpressionForwardDecl(Tokens, Index);
-                    elifBlock.push_back(std::move(node));
+                    thenBlock.push_back(move(node));
                     if (Index < (int)Tokens.size() &&
                         Tokens[Index].type == TokenType::SEMICOLON)
                         ++Index;
                     if (Index >= (int)Tokens.size()) break;
                 }
-                AST elifcl =
-                    makeLeaf(ASTType::ElseifClause, sv("elseif"), elifLine);
-                AST elifblk =
-                    makeLeaf(ASTType::Block, sv("elseif"), elifLine);
-                if (!elifBlock.empty())
-                    elifblk.children["statements"] = std::move(elifBlock);
-                elifcl.children["condition"].push_back(std::move(elifCond));
-                elifcl.children["body"].push_back(std::move(elifblk));
-                clauses.push_back(std::move(elifcl));
-            }
+                AST ifcl = makeLeaf(ASTType::IfClause, sv("if"), line);
+                ifcl.children["condition"].push_back(move(cond));
+                AST thenblk = makeLeaf(ASTType::Block, sv("then"), line);
+                if (!thenBlock.empty())
+                    thenblk.children["statements"] = move(thenBlock);
+                ifcl.children["body"].push_back(move(thenblk));
+                clauses.push_back(move(ifcl));
 
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::ELSE) {
-                int elseLine = Tokens[Index].line;
-                ++Index;
-                vector<AST> elseBlock;
                 while (Index < (int)Tokens.size() &&
-                    Tokens[Index].type != TokenType::END) {
-                    AST node = parseExpressionForwardDecl(Tokens, Index);
-                    elseBlock.push_back(std::move(node));
+                       Tokens[Index].type == TokenType::ELSEIF) {
+                    int elifLine = Tokens[Index].line;
+                    ++Index;
+                    AST elifCond = parseExpressionForwardDecl(Tokens, Index);
                     if (Index < (int)Tokens.size() &&
-                        Tokens[Index].type == TokenType::SEMICOLON)
+                        Tokens[Index].type == TokenType::THEN)
                         ++Index;
-                    if (Index >= (int)Tokens.size()) break;
-                }
-                AST ech =
-                    makeLeaf(ASTType::ElseClause, sv("else"), elseLine);
-                AST eb = makeLeaf(ASTType::Block, sv("else"), elseLine);
-                if (!elseBlock.empty())
-                    eb.children["statements"] = std::move(elseBlock);
-                ech.children["body"].push_back(std::move(eb));
-                clauses.push_back(std::move(ech));
-            }
-
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::END)
-                ++Index;
-            AST ifnode = makeLeaf(ASTType::IfStatement, sv("if"), line);
-            if (!clauses.empty())
-                ifnode.children["clauses"] = std::move(clauses);
-            Chunk.push_back(std::move(ifnode));
-            break;
-        }
-        case TokenType::WHILE: {
-            int line = t.line;
-            ++Index;
-            AST cond = parseExpressionForwardDecl(Tokens, Index);
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::DO)
-                ++Index;
-            vector<AST> body;
-            while (Index < (int)Tokens.size() &&
-                Tokens[Index].type != TokenType::END) {
-                AST node = parseExpressionForwardDecl(Tokens, Index);
-                body.push_back(std::move(node));
-                if (Index < (int)Tokens.size() &&
-                    Tokens[Index].type == TokenType::SEMICOLON)
-                    ++Index;
-            }
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::END)
-                ++Index;
-            AST w = makeLeaf(ASTType::WhileStatement, sv("while"), line);
-            AST wb = makeLeaf(ASTType::Block, sv("while_body"), line);
-            if (!body.empty()) wb.children["statements"] = std::move(body);
-            w.children["condition"].push_back(std::move(cond));
-            w.children["body"].push_back(std::move(wb));
-            Chunk.push_back(std::move(w));
-            break;
-        }
-        case TokenType::FUNCTION: {
-            int line = t.line;
-            ++Index;
-            string funcName;
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::IDENTIFIER) {
-                funcName.assign(Tokens[Index].text.begin(),
-                    Tokens[Index].text.end());
-                ++Index;
-            }
-            else
-                funcName = "<anon>";
-            vector<AST> params;
-            params.reserve(6);
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::LEFT_PAREN) {
-                ++Index;
-                while (Index < (int)Tokens.size() &&
-                    Tokens[Index].type != TokenType::RIGHT_PAREN) {
-                    if (Tokens[Index].type == TokenType::IDENTIFIER) {
-                        params.push_back(makeLeaf(ASTType::Identifier,
-                            Tokens[Index].text,
-                            Tokens[Index].line));
-                        ++Index;
-                        if (Index < (int)Tokens.size() &&
-                            Tokens[Index].type == TokenType::COMMA)
-                            ++Index;
-                    }
-                    else
-                        ++Index;
-                }
-                if (Index < (int)Tokens.size() &&
-                    Tokens[Index].type == TokenType::RIGHT_PAREN)
-                    ++Index;
-            }
-            vector<AST> body;
-            body.reserve(8);
-            while (Index < (int)Tokens.size() &&
-                Tokens[Index].type != TokenType::END) {
-                if (Tokens[Index].type == TokenType::RETURN) {
-                    int rline = Tokens[Index].line;
-                    ++Index;
-                    vector<AST> retvals;
-                    if (Index < (int)Tokens.size() &&
-                        Tokens[Index].type != TokenType::SEMICOLON)
-                        retvals = parseExpressionList(Tokens, Index);
-                    AST rt = makeLeaf(ASTType::ReturnStatement,
-                        sv("return"), rline);
-                    if (!retvals.empty())
-                        rt.children["values"] = std::move(retvals);
-                    body.push_back(std::move(rt));
-                    if (Index < (int)Tokens.size() &&
-                        Tokens[Index].type == TokenType::SEMICOLON)
-                        ++Index;
-                    continue;
-                }
-                AST node = parseExpressionForwardDecl(Tokens, Index);
-                body.push_back(std::move(node));
-                if (Index < (int)Tokens.size() &&
-                    Tokens[Index].type == TokenType::SEMICOLON)
-                    ++Index;
-            }
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::END)
-                ++Index;
-            AST fd = makeLeaf(ASTType::FunctionDeclaration, sv("function"),
-                line);
-            AST id = makeLeaf(ASTType::Identifier, sv(funcName), line);
-            AST blk = makeLeaf(ASTType::Block, sv("body"), line);
-            if (!body.empty()) blk.children["statements"] = std::move(body);
-            fd.children["name"].push_back(std::move(id));
-            fd.children["body"].push_back(std::move(blk));
-            if (!params.empty()) fd.children["params"] = std::move(params);
-            Chunk.push_back(std::move(fd));
-            break;
-        }
-        default: {
-            if (t.type == TokenType::IDENTIFIER) {
-                if (Index + 1 < (int)Tokens.size() &&
-                    (Tokens[Index + 1].type == TokenType::EQUAL ||
-                        Tokens[Index + 1].type == TokenType::COMMA)) {
-                    vector<AST> vars;
-                    vars.reserve(4);
+                    vector<AST> elifBlock;
                     while (Index < (int)Tokens.size() &&
-                        Tokens[Index].type == TokenType::IDENTIFIER) {
-                        vars.push_back(makeLeaf(ASTType::Identifier,
-                            Tokens[Index].text,
-                            Tokens[Index].line));
-                        ++Index;
+                           Tokens[Index].type != TokenType::ELSE &&
+                           Tokens[Index].type != TokenType::ELSEIF &&
+                           Tokens[Index].type != TokenType::END) {
+                        AST node = parseExpressionForwardDecl(Tokens, Index);
+                        elifBlock.push_back(move(node));
                         if (Index < (int)Tokens.size() &&
-                            Tokens[Index].type == TokenType::COMMA)
+                            Tokens[Index].type == TokenType::SEMICOLON)
                             ++Index;
-                        else
-                            break;
+                        if (Index >= (int)Tokens.size()) break;
+                    }
+                    AST elifcl =
+                        makeLeaf(ASTType::ElseifClause, sv("elseif"), elifLine);
+                    AST elifblk =
+                        makeLeaf(ASTType::Block, sv("elseif"), elifLine);
+                    if (!elifBlock.empty())
+                        elifblk.children["statements"] = move(elifBlock);
+                    elifcl.children["condition"].push_back(move(elifCond));
+                    elifcl.children["body"].push_back(move(elifblk));
+                    clauses.push_back(move(elifcl));
+                }
+
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::ELSE) {
+                    int elseLine = Tokens[Index].line;
+                    ++Index;
+                    vector<AST> elseBlock;
+                    while (Index < (int)Tokens.size() &&
+                           Tokens[Index].type != TokenType::END) {
+                        AST node = parseExpressionForwardDecl(Tokens, Index);
+                        elseBlock.push_back(move(node));
+                        if (Index < (int)Tokens.size() &&
+                            Tokens[Index].type == TokenType::SEMICOLON)
+                            ++Index;
+                        if (Index >= (int)Tokens.size()) break;
+                    }
+                    AST ech =
+                        makeLeaf(ASTType::ElseClause, sv("else"), elseLine);
+                    AST eb = makeLeaf(ASTType::Block, sv("else"), elseLine);
+                    if (!elseBlock.empty())
+                        eb.children["statements"] = move(elseBlock);
+                    ech.children["body"].push_back(move(eb));
+                    clauses.push_back(move(ech));
+                }
+
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::END)
+                    ++Index;
+                AST ifnode = makeLeaf(ASTType::IfStatement, sv("if"), line);
+                if (!clauses.empty())
+                    ifnode.children["clauses"] = move(clauses);
+                Chunk.push_back(move(ifnode));
+                break;
+            }
+            case TokenType::WHILE: {
+                int line = t.line;
+                ++Index;
+                AST cond = parseExpressionForwardDecl(Tokens, Index);
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::DO)
+                    ++Index;
+                vector<AST> body;
+                while (Index < (int)Tokens.size() &&
+                       Tokens[Index].type != TokenType::END) {
+                    AST node = parseExpressionForwardDecl(Tokens, Index);
+                    body.push_back(move(node));
+                    if (Index < (int)Tokens.size() &&
+                        Tokens[Index].type == TokenType::SEMICOLON)
+                        ++Index;
+                }
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::END)
+                    ++Index;
+                AST w = makeLeaf(ASTType::WhileStatement, sv("while"), line);
+                AST wb = makeLeaf(ASTType::Block, sv("while_body"), line);
+                if (!body.empty()) wb.children["statements"] = move(body);
+                w.children["condition"].push_back(move(cond));
+                w.children["body"].push_back(move(wb));
+                Chunk.push_back(move(w));
+                break;
+            }
+            case TokenType::FUNCTION: {
+                int line = t.line;
+                ++Index;
+                string funcName;
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::IDENTIFIER) {
+                    funcName.assign(Tokens[Index].text.begin(),
+                                    Tokens[Index].text.end());
+                    ++Index;
+                } else
+                    funcName = "<anon>";
+                vector<AST> params;
+                params.reserve(6);
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::LEFT_PAREN) {
+                    ++Index;
+                    while (Index < (int)Tokens.size() &&
+                           Tokens[Index].type != TokenType::RIGHT_PAREN) {
+                        if (Tokens[Index].type == TokenType::IDENTIFIER) {
+                            params.push_back(makeLeaf(ASTType::Identifier,
+                                                      Tokens[Index].text,
+                                                      Tokens[Index].line));
+                            ++Index;
+                            if (Index < (int)Tokens.size() &&
+                                Tokens[Index].type == TokenType::COMMA)
+                                ++Index;
+                        } else
+                            ++Index;
                     }
                     if (Index < (int)Tokens.size() &&
-                        Tokens[Index].type == TokenType::EQUAL) {
+                        Tokens[Index].type == TokenType::RIGHT_PAREN)
                         ++Index;
-                        vector<AST> vals =
-                            parseExpressionList(Tokens, Index);
-                        AST asn = makeLeaf(ASTType::AssignmentStatement,
-                            sv("assign"), t.line);
-                        if (!vars.empty())
-                            asn.children["variables"] = std::move(vars);
-                        if (!vals.empty())
-                            asn.children["values"] = std::move(vals);
-                        Chunk.push_back(std::move(asn));
+                }
+                vector<AST> body;
+                body.reserve(8);
+                while (Index < (int)Tokens.size() &&
+                       Tokens[Index].type != TokenType::END) {
+                    if (Tokens[Index].type == TokenType::RETURN) {
+                        int rline = Tokens[Index].line;
+                        ++Index;
+                        vector<AST> retvals;
+                        if (Index < (int)Tokens.size() &&
+                            Tokens[Index].type != TokenType::SEMICOLON)
+                            retvals = parseExpressionList(Tokens, Index);
+                        AST rt = makeLeaf(ASTType::ReturnStatement,
+                                          sv("return"), rline);
+                        if (!retvals.empty())
+                            rt.children["values"] = move(retvals);
+                        body.push_back(move(rt));
+                        if (Index < (int)Tokens.size() &&
+                            Tokens[Index].type == TokenType::SEMICOLON)
+                            ++Index;
+                        continue;
                     }
-                    else {
-                        AST expr =
-                            parseExpressionForwardDecl(Tokens, Index);
+                    AST node = parseExpressionForwardDecl(Tokens, Index);
+                    body.push_back(move(node));
+                    if (Index < (int)Tokens.size() &&
+                        Tokens[Index].type == TokenType::SEMICOLON)
+                        ++Index;
+                }
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::END)
+                    ++Index;
+                AST fd = makeLeaf(ASTType::FunctionDeclaration, sv("function"),
+                                  line);
+                AST id = makeLeaf(ASTType::Identifier, sv(funcName), line);
+                AST blk = makeLeaf(ASTType::Block, sv("body"), line);
+                if (!body.empty()) blk.children["statements"] = move(body);
+                fd.children["name"].push_back(move(id));
+                fd.children["body"].push_back(move(blk));
+                if (!params.empty()) fd.children["params"] = move(params);
+                Chunk.push_back(move(fd));
+                break;
+            }
+            default: {
+                if (t.type == TokenType::IDENTIFIER) {
+                    if (Index + 1 < (int)Tokens.size() &&
+                        (Tokens[Index + 1].type == TokenType::EQUAL ||
+                         Tokens[Index + 1].type == TokenType::COMMA)) {
+                        vector<AST> vars;
+                        vars.reserve(4);
+                        while (Index < (int)Tokens.size() &&
+                               Tokens[Index].type == TokenType::IDENTIFIER) {
+                            vars.push_back(makeLeaf(ASTType::Identifier,
+                                                    Tokens[Index].text,
+                                                    Tokens[Index].line));
+                            ++Index;
+                            if (Index < (int)Tokens.size() &&
+                                Tokens[Index].type == TokenType::COMMA)
+                                ++Index;
+                            else
+                                break;
+                        }
+                        if (Index < (int)Tokens.size() &&
+                            Tokens[Index].type == TokenType::EQUAL) {
+                            ++Index;
+                            vector<AST> vals =
+                                parseExpressionList(Tokens, Index);
+                            AST asn = makeLeaf(ASTType::AssignmentStatement,
+                                               sv("assign"), t.line);
+                            if (!vars.empty())
+                                asn.children["variables"] = move(vars);
+                            if (!vals.empty())
+                                asn.children["values"] = move(vals);
+                            Chunk.push_back(move(asn));
+                        } else {
+                            AST expr =
+                                parseExpressionForwardDecl(Tokens, Index);
+                            AST ch =
+                                makeLeaf(ASTType::Chunk, sv("expr"), expr.line);
+                            ch.children["statements"].push_back(move(expr));
+                            Chunk.push_back(move(ch));
+                        }
+                    } else if (Index + 1 < (int)Tokens.size() &&
+                               Tokens[Index + 1].type ==
+                                   TokenType::LEFT_PAREN) {
+                        AST call = parseSuffixed(Tokens, Index);
+                        AST cs = makeLeaf(ASTType::CallStatement,
+                                          sv("call_stmt"), t.line);
+                        cs.children["expression"].push_back(move(call));
+                        Chunk.push_back(move(cs));
+                    } else {
+                        AST expr = parseExpressionForwardDecl(Tokens, Index);
                         AST ch =
                             makeLeaf(ASTType::Chunk, sv("expr"), expr.line);
-                        ch.children["statements"].push_back(
-                            std::move(expr));
-                        Chunk.push_back(std::move(ch));
+                        ch.children["statements"].push_back(move(expr));
+                        Chunk.push_back(move(ch));
                     }
-                }
-                else if (Index + 1 < (int)Tokens.size() &&
-                    Tokens[Index + 1].type ==
-                    TokenType::LEFT_PAREN) {
-                    AST call = parseSuffixed(Tokens, Index);
-                    AST cs = makeLeaf(ASTType::CallStatement,
-                        sv("call_stmt"), t.line);
-                    cs.children["expression"].push_back(std::move(call));
-                    Chunk.push_back(std::move(cs));
-                }
-                else {
+                } else {
                     AST expr = parseExpressionForwardDecl(Tokens, Index);
-                    AST ch =
-                        makeLeaf(ASTType::Chunk, sv("expr"), expr.line);
-                    ch.children["statements"].push_back(std::move(expr));
-                    Chunk.push_back(std::move(ch));
+                    AST ch = makeLeaf(ASTType::Chunk, sv("expr"), expr.line);
+                    ch.children["statements"].push_back(move(expr));
+                    Chunk.push_back(move(ch));
                 }
+                if (Index < (int)Tokens.size() &&
+                    Tokens[Index].type == TokenType::SEMICOLON)
+                    ++Index;
+                break;
             }
-            else {
-                AST expr = parseExpressionForwardDecl(Tokens, Index);
-                AST ch = makeLeaf(ASTType::Chunk, sv("expr"), expr.line);
-                ch.children["statements"].push_back(std::move(expr));
-                Chunk.push_back(std::move(ch));
-            }
-            if (Index < (int)Tokens.size() &&
-                Tokens[Index].type == TokenType::SEMICOLON)
-                ++Index;
-            break;
-        }
         }  // end switch
     }  // end while
     return Chunk;
@@ -1099,41 +1081,40 @@ vector<AST> Parse(const vector<Token>& Tokens) {
 
 // ---------- Test helpers / main ----------
 
-static inline std::string jsonEscape(const std::string& s) {
-    std::string out;
+static inline string jsonEscape(const string& s) {
+    string out;
     out.reserve(s.size() + 8);
     for (unsigned char uc : s) {
         switch (uc) {
-        case '\"':
-            out += "\\\"";
-            break;
-        case '\\':
-            out += "\\\\";
-            break;
-        case '\b':
-            out += "\\b";
-            break;
-        case '\f':
-            out += "\\f";
-            break;
-        case '\n':
-            out += "\\n";
-            break;
-        case '\r':
-            out += "\\r";
-            break;
-        case '\t':
-            out += "\\t";
-            break;
-        default:
-            if (uc < 0x20) {
-                out += "\\u00";
-                out += hexDigit(uc >> 4);
-                out += hexDigit(uc & 0xF);
-            }
-            else {
-                out.push_back(static_cast<char>(uc));
-            }
+            case '\"':
+                out += "\\\"";
+                break;
+            case '\\':
+                out += "\\\\";
+                break;
+            case '\b':
+                out += "\\b";
+                break;
+            case '\f':
+                out += "\\f";
+                break;
+            case '\n':
+                out += "\\n";
+                break;
+            case '\r':
+                out += "\\r";
+                break;
+            case '\t':
+                out += "\\t";
+                break;
+            default:
+                if (uc < 0x20) {
+                    out += "\\u00";
+                    out += hexDigit(uc >> 4);
+                    out += hexDigit(uc & 0xF);
+                } else {
+                    out.push_back(static_cast<char>(uc));
+                }
         }
     }
     return out;
@@ -1141,88 +1122,88 @@ static inline std::string jsonEscape(const std::string& s) {
 
 string astTypeToString(ASTType type) {
     switch (type) {
-    case ASTType::AssignmentStatement:
-        return "AssignmentStatement";
-    case ASTType::LocalStatement:
-        return "LocalStatement";
-    case ASTType::Identifier:
-        return "Identifier";
-    case ASTType::BooleanLiteral:
-        return "BooleanLiteral";
-    case ASTType::StringLiteral:
-        return "StringLiteral";
-    case ASTType::NumericLiteral:
-        return "NumericLiteral";
-    case ASTType::FunctionDeclaration:
-        return "FunctionDeclaration";
-    case ASTType::FunctionExpression:
-        return "FunctionExpression";
-    case ASTType::CallStatement:
-        return "CallStatement";
-    case ASTType::CallExpression:
-        return "CallExpression";
-    case ASTType::BinaryExpression:
-        return "BinaryExpression";
-    case ASTType::ReturnStatement:
-        return "ReturnStatement";
-    case ASTType::DoStatement:
-        return "DoStatement";
-    case ASTType::WhileStatement:
-        return "WhileStatement";
-    case ASTType::TableConstructorExpression:
-        return "TableConstructorExpression";
-    case ASTType::TableValue:
-        return "TableValue";
-    case ASTType::TableKey:
-        return "TableKey";
-    case ASTType::MemberExpression:
-        return "MemberExpression";
-    case ASTType::UnaryExpression:
-        return "UnaryExpression";
-    case ASTType::IndexExpression:
-        return "IndexExpression";
-    case ASTType::ForGenericStatement:
-        return "ForGenericStatement";
-    case ASTType::ForNumericStatement:
-        return "ForNumericStatement";
-    case ASTType::IfStatement:
-        return "IfStatement";
-    case ASTType::IfClause:
-        return "IfClause";
-    case ASTType::ElseifClause:
-        return "ElseifClause";
-    case ASTType::ElseClause:
-        return "ElseClause";
-    case ASTType::BreakStatement:
-        return "BreakStatement";
-    case ASTType::GotoStatement:
-        return "GotoStatement";
-    case ASTType::LabelStatement:
-        return "LabelStatement";
-    case ASTType::RepeatStatement:
-        return "RepeatStatement";
-    case ASTType::VarargLiteral:
-        return "VarargLiteral";
-    case ASTType::NilLiteral:
-        return "NilLiteral";
-    case ASTType::Chunk:
-        return "Chunk";
-    case ASTType::Block:
-        return "Block";
-    case ASTType::VariableAttribute:
-        return "VariableAttribute";
-    case ASTType::LogicalExpression:
-        return "LogicalExpression";
-    case ASTType::TableKeyString:
-        return "TableKeyString";
-    default:
-        return "Unknown";
+        case ASTType::AssignmentStatement:
+            return "AssignmentStatement";
+        case ASTType::LocalStatement:
+            return "LocalStatement";
+        case ASTType::Identifier:
+            return "Identifier";
+        case ASTType::BooleanLiteral:
+            return "BooleanLiteral";
+        case ASTType::StringLiteral:
+            return "StringLiteral";
+        case ASTType::NumericLiteral:
+            return "NumericLiteral";
+        case ASTType::FunctionDeclaration:
+            return "FunctionDeclaration";
+        case ASTType::FunctionExpression:
+            return "FunctionExpression";
+        case ASTType::CallStatement:
+            return "CallStatement";
+        case ASTType::CallExpression:
+            return "CallExpression";
+        case ASTType::BinaryExpression:
+            return "BinaryExpression";
+        case ASTType::ReturnStatement:
+            return "ReturnStatement";
+        case ASTType::DoStatement:
+            return "DoStatement";
+        case ASTType::WhileStatement:
+            return "WhileStatement";
+        case ASTType::TableConstructorExpression:
+            return "TableConstructorExpression";
+        case ASTType::TableValue:
+            return "TableValue";
+        case ASTType::TableKey:
+            return "TableKey";
+        case ASTType::MemberExpression:
+            return "MemberExpression";
+        case ASTType::UnaryExpression:
+            return "UnaryExpression";
+        case ASTType::IndexExpression:
+            return "IndexExpression";
+        case ASTType::ForGenericStatement:
+            return "ForGenericStatement";
+        case ASTType::ForNumericStatement:
+            return "ForNumericStatement";
+        case ASTType::IfStatement:
+            return "IfStatement";
+        case ASTType::IfClause:
+            return "IfClause";
+        case ASTType::ElseifClause:
+            return "ElseifClause";
+        case ASTType::ElseClause:
+            return "ElseClause";
+        case ASTType::BreakStatement:
+            return "BreakStatement";
+        case ASTType::GotoStatement:
+            return "GotoStatement";
+        case ASTType::LabelStatement:
+            return "LabelStatement";
+        case ASTType::RepeatStatement:
+            return "RepeatStatement";
+        case ASTType::VarargLiteral:
+            return "VarargLiteral";
+        case ASTType::NilLiteral:
+            return "NilLiteral";
+        case ASTType::Chunk:
+            return "Chunk";
+        case ASTType::Block:
+            return "Block";
+        case ASTType::VariableAttribute:
+            return "VariableAttribute";
+        case ASTType::LogicalExpression:
+            return "LogicalExpression";
+        case ASTType::TableKeyString:
+            return "TableKeyString";
+        default:
+            return "Unknown";
     }
 }
 
 // ---------------- JSON serializer ----------------
-void printASTJson(const AST& node, std::ostream& out, int indent = 0) {
-    std::string ind(indent, ' ');
+void printASTJson(const AST& node, ostream& out, int indent = 0) {
+    string ind(indent, ' ');
     out << ind << "{\n";
 
     out << ind << "  \"nodeType\": \"" << astTypeToString(node.type) << "\",\n";
@@ -1250,72 +1231,68 @@ void printASTJson(const AST& node, std::ostream& out, int indent = 0) {
     out << "}\n" << ind << "}";
 }
 int main(int argc, char* argv[]) {
-    std::string filePath;
+    string filePath;
 
     if (argc >= 2) {
         filePath = argv[1];
-    }
-    else {
-        std::cout << "Enter path to source file: ";
-        std::getline(std::cin, filePath);
+    } else {
+        cout << "Enter path to source file: ";
+        getline(cin, filePath);
     }
 
     if (filePath == "benchmark") {
 #ifdef _WIN32
         system("cls");
 #else
-        std::cout << "\033[2J\033[H";
+        cout << "\033[2J\033[H";
         (void)system("clear");
 #endif
 
-        std::cout << "[Benchmark] Enter path to source file: ";
-        std::getline(std::cin, filePath);
-        if (!std::filesystem::exists(filePath)) {
-            std::cerr << "Error: file not found -> " << filePath << "\n";
+        cout << "[Benchmark] Enter path to source file: ";
+        getline(cin, filePath);
+        if (!filesystem::exists(filePath)) {
+            cerr << "Error: file not found -> " << filePath << "\n";
             return 1;
         }
 
         // ask user for parameters (defaults 50, 20000)
-        std::string input;
+        string input;
         int REPEAT = 50;
         int RUNS = 20000;
 
-        std::cout << "[Benchmark] How many times to repeat the code? (default "
-            "= 50): ";
-        std::getline(std::cin, input);
+        cout << "[Benchmark] How many times to repeat the code? (default "
+                "= 50): ";
+        getline(cin, input);
         if (!input.empty()) {
             try {
-                REPEAT = std::stoi(input);
-            }
-            catch (...) {
+                REPEAT = stoi(input);
+            } catch (...) {
             }
         }
 
-        std::cout
-            << "[Benchmark] How many runs to perform? (default = 20000): ";
-        std::getline(std::cin, input);
+        cout << "[Benchmark] How many runs to perform? (default = 20000): ";
+        getline(cin, input);
         if (!input.empty()) {
             try {
-                RUNS = std::stoi(input);
-            }
-            catch (...) {
+                RUNS = stoi(input);
+            } catch (...) {
             }
         }
 
         // Read file contents
-        std::ifstream in(filePath);
-        std::string code((std::istreambuf_iterator<char>(in)),
-            std::istreambuf_iterator<char>());
+        ifstream in(filePath);
+        string code((istreambuf_iterator<char>(in)),
+                    istreambuf_iterator<char>());
 
         // Build code * REPEAT
-        std::string testCode;
+        string testCode;
         testCode.reserve(code.size() * REPEAT);
         for (int i = 0; i < REPEAT; ++i) testCode += code;
 
-        std::cout << "[Benchmark] Running Lexer+Parse on (code * " << REPEAT
-            << ") for " << RUNS << " iterations...\n";
+        cout << "[Benchmark] Running Lexer+Parse on (code * " << REPEAT
+             << ") for " << RUNS << " iterations...\n";
 
-        auto t0 = std::chrono::high_resolution_clock::now();
+        auto t0 = chrono::high_resolution_clock::now();
 
         static volatile size_t blackhole = 0;
 
@@ -1325,46 +1302,44 @@ int main(int argc, char* argv[]) {
             blackhole += chunk.size();
         }
 
-        auto t1 = std::chrono::high_resolution_clock::now();
+        auto t1 = chrono::high_resolution_clock::now();
         double total_ms =
-            std::chrono::duration_cast<
-            std::chrono::duration<double, std::milli>>(t1 - t0)
-            .count();
+            chrono::duration_cast<chrono::duration<double, milli>>(t1 - t0)
+                .count();
         double avg_ms = total_ms / double(RUNS);
 
-        std::cout << std::fixed << std::setprecision(3);
-        std::cout << "[Benchmark] Total time: " << total_ms << " ms\n";
-        std::cout << "[Benchmark] Average per run (lex+parse): " << avg_ms
-            << " ms\n";
-        std::cout << "[Benchmark] blackhole (sum of chunk sizes): " << blackhole
-            << "\n";
-        std::cout << "\nPress Enter to exit...";
-        std::cin.ignore();
+        cout << fixed << setprecision(3);
+        cout << "[Benchmark] Total time: " << total_ms << " ms\n";
+        cout << "[Benchmark] Average per run (lex+parse): " << avg_ms
+             << " ms\n";
+        cout << "[Benchmark] blackhole (sum of chunk sizes): " << blackhole
+             << "\n";
+        cout << "\nPress Enter to exit...";
+        cin.ignore();
         return 0;
     }
 
-    if (!std::filesystem::exists(filePath)) {
-        std::cerr << "Error: file not found -> " << filePath << "\n";
+    if (!filesystem::exists(filePath)) {
+        cerr << "Error: file not found -> " << filePath << "\n";
         return 1;
     }
 
-    std::ifstream in(filePath);
-    std::string code((std::istreambuf_iterator<char>(in)),
-        std::istreambuf_iterator<char>());
+    ifstream in(filePath);
+    string code((istreambuf_iterator<char>(in)), istreambuf_iterator<char>());
 
     auto tokens = Lexer(code);
     auto chunk = Parse(tokens);
 
-    std::cout << "[\n";
+    cout << "[\n";
     for (size_t i = 0; i < chunk.size(); ++i) {
-        printASTJson(chunk[i], std::cout, 2);
+        printASTJson(chunk[i], cout, 2);
         if (i + 1 < chunk.size())
-            std::cout << ",\n";
+            cout << ",\n";
         else
-            std::cout << "\n";
+            cout << "\n";
     }
-    std::cout << "]\n";
-    std::cout << "\nPress Enter to exit...";
-    std::cin.ignore();
+    cout << "]\n";
+    cout << "\nPress Enter to exit...";
+    cin.ignore();
     return 0;
 }
