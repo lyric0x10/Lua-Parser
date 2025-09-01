@@ -1318,7 +1318,7 @@ int main(int argc, char* argv[]) {
         auto t0 = std::chrono::high_resolution_clock::now();
 
         static volatile size_t blackhole = 0;
-        
+
         for (int i = 0; i < RUNS; ++i) {
             auto tokens = Lexer(testCode);
             auto chunk = Parse(tokens);
@@ -1362,6 +1362,7 @@ int main(int argc, char* argv[]) {
             std::cout << "\n";
     }
     std::cout << "]\n";
-
+    std::cout << "\nPress Enter to exit...";
+    std::cin.ignore();
     return 0;
 }
